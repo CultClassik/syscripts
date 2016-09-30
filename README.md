@@ -16,7 +16,7 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 ---
 
 ###Notes:
-- The default Vagrant provider will be set to "vsphere" unless you choose to install Hyper-V or VirtualBox.
+- The default Vagrant provider will be set to "vsphere" unless you choose to install Hyper-V or VirtualBox.  You can change this any time by editing the environment variable "VAGRANT_DEFAULT_PROVIDER".
 - If you are using this on a physical box you should review the Win10-Optimize.ps1 and Win10-RemovePackages.ps1 files to see what they do before you say yes to those options.
 - You should take a snapshot, checkpoint or equivalent before running this in a VM so that you can revert the changes easily if anything goes wrong.
 
