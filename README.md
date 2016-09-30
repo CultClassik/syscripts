@@ -2,11 +2,12 @@
 
 This repository contains a collection of scripts I used to automate the setup of a new system.
 
-Very handy for configuring a VM.
+I  used Matthew Hodgkins's plog post as inspiration (or copy/paste fodder, depending..)
 
-Pretty simple Powershell script, this will grow over time.
+https://hodgkins.io/setup-windows-10-for-chef-and-powershell-dsc-development
 
-Note that I use this on Windows 10 Pro, it probably will throw a big malf if you use it on anything else.  You have been warned ;)
+
+Pretty simple Powershell script, this will grow over time. Note that I use this on Windows 10 Pro, it probably will throw a big malf if you use it on anything else.  You have been warned ;)
 
 To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command line:
 
