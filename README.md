@@ -23,7 +23,8 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 ---
 
 ###To do:
-- Disable onedrive
+- fix "gem" issue, not in path
+- Disable OneDrive
 - Disable windows updates "from more than one place" - prevent pc from sending updates to other users
 - Verify Hyper-V install is working
 - Disable hyper-v services if not being used

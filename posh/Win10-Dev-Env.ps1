@@ -127,6 +127,7 @@ if ($doChef -eq 6) {
   Add-PathVariable -Path 'C:/opscode/chefdk/embedded/bin'
 
   # ruby specific Atom stuff, only needed for Chef
+  gem install kitchen-pester
   gem install rubocop
   apm install linter-rubocop
   apm install rubocop-auto-correct
@@ -180,6 +181,7 @@ If ($doVagrant -eq 6) {
   # install vagrant
   choco install vagrant -y
   # Install vagrant plugins
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'nokogiri'
   C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-berkshelf'
   C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-dsc'
   C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-omnibus'
@@ -190,9 +192,6 @@ If ($doVagrant -eq 6) {
   # Install vagrant boxes
   # vagrant box add ubuntu/trusty64
   # vagrant box add kensykora/windows_2012_r2_standard
-
-  # Install the test-kitchen plugins
-  gem install kitchen-pester
 
   # install xtra plugins for vagrant if virtualbox was installed
   if ($myVirt -eq "virtualbox") {
