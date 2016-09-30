@@ -1,11 +1,13 @@
 ####################
 ##  Chris Diehl
 ##  Created 9-30-16
-##  v0.1
+##  v0.2
 ###################
 # load some functions
 $optimize = "$($MyInvocation.MyCommand.path | split-path)\Win10-Optimize.ps1"
 . $optimize
+$killer = "$($MyInvocation.MyCommand.path | split-path)\Win10-RemovePackages.ps1"
+. $killer
 
 # get os version
 $myos = (get-itemproperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName
@@ -22,16 +24,25 @@ If ($doInstall -eq 2) {
     break
 }
 
+# Remove some things we probably don't need on a dev box
+
 ################################
 ### get option input from user
 ################################
+$doApps = $wshell.Popup("Try to remove extra junk from Windows?  `r`n `r`n" +
+  "You may see some errors if we try this, but they won't hurt anything.  Don't worry about errors until after the next dialog box."
+  ,0,"",4)
+if ($doApps -eq 6) {
+  killApps
+}
+
 $doSvcs = $wshell.Popup("Disable commonly unused Windows services and disable the firewall?",0,"",4)
 if ($doSvcs -eq 6) {
   disableSvcs
 }
 optimizeWin
 
-$doBasics = $wshell.Popup("Install the basics?  Select yes if you haven't run this before.",0,"",4)
+$doBasics = $wshell.Popup("Install the basics?  Select YES if you haven't run this before.",0,"",4)
 
 $doChef = $wshell.Popup("Install ChefDK?",0,"",4)
 
@@ -42,6 +53,8 @@ $doAzure = $wshell.Popup("Install Azure PS tools?",0,"",4)
 if ($myos -eq "Windows 10 Pro") {
   $doVirt = $wshell.Popup("Install Hyper-V?",0,"",4)
   $myVirt = "hyperv"
+} else {
+  $doVirt = 7
 }
 
 if ($doVirt -eq 7) {
@@ -95,6 +108,14 @@ If ($doBasics -eq 6) {
   apm install line-ending-converter
   apm install minimap
   apm install monokai
+}
+
+
+################################
+### optional chrome install
+################################
+if ($doChrome -eq 6) {
+    choco install googlechrome -y
 }
 
 ################################
@@ -159,13 +180,12 @@ If ($doVagrant -eq 6) {
   # install vagrant
   choco install vagrant -y
   # Install vagrant plugins
-  vagrant plugin install 'vagrant-berkshelf'
-  vagrant plugin install 'vagrant-dsc'
-  vagrant plugin install 'vagrant-omnibus'
-  vagrant plugin install 'vagrant-reload'
-
-  vagrant plugin install 'vagrant-winrm'
-  vagrant plugin install 'winrm-fs'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-berkshelf'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-dsc'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-omnibus'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-reload'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-winrm'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'winrm-fs'
 
   # Install vagrant boxes
   # vagrant box add ubuntu/trusty64
@@ -176,8 +196,8 @@ If ($doVagrant -eq 6) {
 
   # install xtra plugins for vagrant if virtualbox was installed
   if ($myVirt -eq "virtualbox") {
-    vagrant plugin install 'vagrant-vbguest'
-    vagrant plugin install 'vagrant-vbox-snapshot'
+    C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-vbguest'
+    C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-vbox-snapshot'
   }
 
   # Set the default hypervisor provider for Vagrant
@@ -191,18 +211,11 @@ If ($doVagrant -eq 6) {
 ### optional vagrant providers install
 ################################
 if ($doVagrant -eq 6) {
-  vagrant plugin install 'vagrant-aws'
-  vagrant plugin install 'vagrant-azure'
-  vagrant plugin install 'vagrant-vsphere'
-  vagrant plugin install 'vagrant-vcenter'
-  vagrant plugin install 'vagrant-vcloud'
-}
-
-################################
-### optional chrome install
-################################
-if ($doChrome -eq 6) {
-    choco install googlechrome
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-aws'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-azure'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-vsphere'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-vcenter'
+  C:\HashiCorp\Vagrant\bin\vagrant plugin install 'vagrant-vcloud'
 }
 
 #### move ps profile to synced folder like dropbox or onedrive

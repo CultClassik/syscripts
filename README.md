@@ -15,11 +15,17 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 
 ---
 
+###Notes:
+- The default Vagrant provider will be set to "vsphere" unless you choose to install Hyper-V or VirtualBox.
+- If you are using this on a physical box you should review the Win10-Optimize.ps1 and Win10-RemovePackages.ps1 files to see what they do before you say yes to those options.
+- You should take a snapshot, checkpoint or equivalent before running this in a VM so that you can revert the changes easily if anything goes wrong.
+
+---
+
 ###To do:
-- Add vagrant to path after install, vagrant plugins not working due to this?
 - Disable onedrive
 - Disable windows updates "from more than one place" - prevent pc from sending updates to other users
-- Finish vbox/hyper-v config
+- Verify Hyper-V install is working
 - Disable hyper-v services if not being used
-- Add options for vagrant provider installs - hyper-v, vbox, esx, vmware desktop
+- Possibly add options for vagrant provider installs - hyper-v, vbox, esx, vmware desktop
 - Change windows settings i.e. display hidden files
