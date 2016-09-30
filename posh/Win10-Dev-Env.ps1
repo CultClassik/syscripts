@@ -29,14 +29,14 @@ If ($doInstall -eq 2) {
 ################################
 ### get option input from user
 ################################
-$doApps = $wshell.Popup("Try to remove extra junk from Windows?  `r`n `r`n" +
+$doApps = $wshell.Popup("Try to remove un-needed packages from Windows?  `r`n `r`n" +
   "You may see some errors if we try this, but they won't hurt anything.  Don't worry about errors until after the next dialog box."
   ,0,"",4)
 if ($doApps -eq 6) {
   killApps
 }
 
-$doSvcs = $wshell.Popup("Disable commonly unused Windows services and disable the firewall?",0,"",4)
+$doSvcs = $wshell.Popup("Disable commonly unused Windows services and disable the firewall, aka optimize Windows?",0,"",4)
 if ($doSvcs -eq 6) {
   disableSvcs
 }
