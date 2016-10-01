@@ -18,22 +18,22 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 ###What it does:
 - Removes a lot of un-necessary items from Windows, disables Defender, Updates, etc
 - Installs:
---* Chocolately package Manager, Nuget
---* curl
---* SysInternals
---* Notepad++
---* Postman
---* Packer
---* Atom with several plugins
---* EasyConnect
---* Git and Git extentions GUI
+  * Chocolately package Manager, Nuget
+  * curl
+  * SysInternals
+  * Notepad++
+  * Postman
+  * Packer
+  * Atom with several plugins
+  * EasyConnect
+  * Git and Git extentions GUI
 - Optionally installs:
---* ChefDK
---* AzureRM tools for Powershell
---* Hyper-V OR VirtualBox locally
---* Docker tools
---* Vagrant with common provider plugins (Azure, AWS, VMWare, etc)
---* Google Chrome web browser
+  * ChefDK
+  * AzureRM tools for Powershell
+  * Hyper-V OR VirtualBox locally
+  * Docker tools
+  * Vagrant with common provider plugins (Azure, AWS, VMWare, etc)
+  * Google Chrome web browser
 
 ---
 
