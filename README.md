@@ -15,6 +15,28 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 
 ---
 
+###What it does:
+- Removes a lot of un-necessary items from Windows, disables Defender, Updates, etc
+- Installs:
+-* Chocolately package Manager, Nuget
+-* curl
+-* SysInternals
+-* Notepad++
+-* Postman
+-* Packer
+-* Atom with several plugins
+-* EasyConnect
+-* Git and Git extentions GUI
+- Optionally installs:
+-* ChefDK
+-* AzureRM tools for Powershell
+-* Hyper-V OR VirtualBox locally
+-* Docker tools
+-* Vagrant with common provider plugins (Azure, AWS, VMWare, etc)
+-* Google Chrome web browser
+
+---
+
 ###Notes:
 - The default Vagrant provider will be set to "vsphere" unless you choose to install Hyper-V or VirtualBox.  You can change this any time by editing the environment variable "VAGRANT_DEFAULT_PROVIDER".
 - If you are using this on a physical box you should review the Win10-Optimize.ps1 and Win10-RemovePackages.ps1 files to see what they do before you say yes to those options.
@@ -23,6 +45,9 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 ---
 
 ###To do:
+- Add shortcuts or something to all of the apps & tools that are installed
+- Atom issue "Error: spawn rubocop ENOENT"
+- Chef commands not running, probably needs path refreshed after installing ChefDK
 - fix "gem" issue, not in path
 - Disable OneDrive
 - Disable windows updates "from more than one place" - prevent pc from sending updates to other users
@@ -30,3 +55,4 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 - Disable hyper-v services if not being used
 - Possibly add options for vagrant provider installs - hyper-v, vbox, esx, vmware desktop
 - Change windows settings i.e. display hidden files
+- Add AWS tools for Powershell

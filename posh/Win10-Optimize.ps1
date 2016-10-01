@@ -6,6 +6,9 @@ function disableSvcs {
   Set-Service -Name "XblAuthManager" -StartupType disabled # Xbox Live Auth Manager
   Set-Service -Name "XblGameSave" -StartupType disabled # Xbox Live Game Save
   Set-Service -Name "XboxNetApiSvc" -StartupType disabled #	XboxNetApiSvc
+  Set-Service -Name "wuauserv" -StartupType disabled #	Windows Updates
+  Set-Service -Name "WinDefend" -StartupType disabled #	Windows Defender
+  Set-Service -Name "WdNisSvc" -StartupType disabled #	Windows Defender Network Inspection
 }
 
 function optimizeWin {
