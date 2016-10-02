@@ -318,8 +318,8 @@ if ($doVagrant -eq 6) {
 ### Powershell Profile
 ###########################
 $profExists = Test-Path $profile
-if ($profExists -eq False) {
-  $newProf = New-Item -path $profile -type file –force
+if ($profExists -eq 0) {
+  $newProf = New-Item -path $profile -type file -Force
 }
 'set-location c:\code' | Out-File -File $newProf -Append -Force
 '$shell.BackgroundColor = “Gray”'  | Out-File -File $newProf -Append -Force
