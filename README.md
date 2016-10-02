@@ -11,7 +11,7 @@ Pretty simple Powershell script, this will grow over time. Note that I use this 
 
 To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command line:
 
-`powershell -ExecutionPolicy ByPass -File Win10-Dev-Env.ps1`
+`powershell -ExecutionPolicy ByPass -File .\Configure-Win10.ps1`
 
 ---
 
@@ -19,21 +19,20 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 - Removes a lot of un-necessary items from Windows, disables Defender, Updates, etc
 - Installs:
   * Chocolately package Manager, Nuget
+  * Git and Git extentions GUI
   * curl
-  * SysInternals
-  * Notepad++
   * Postman
   * Packer
-  * Atom with several plugins
+- Optionally installed System Tools:
+  * SysInternals
+  * Notepad++
   * EasyConnect
-  * Git and Git extentions GUI
 - Optionally installs:
   * ChefDK
   * AzureRM tools for Powershell
   * Hyper-V OR VirtualBox locally
   * Docker tools
   * Vagrant with common provider plugins (Azure, AWS, VMWare, etc)
-  * Google Chrome web browser
 
 ---
 
@@ -41,6 +40,8 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 - The default Vagrant provider will be set to "vsphere" unless you choose to install Hyper-V or VirtualBox.  You can change this any time by editing the environment variable "VAGRANT_DEFAULT_PROVIDER".
 - If you are using this on a physical box you should review the Win10-Optimize.ps1 and Win10-RemovePackages.ps1 files to see what they do before you say yes to those options.
 - You should take a snapshot, checkpoint or equivalent before running this in a VM so that you can revert the changes easily if anything goes wrong.
+- If you click in the Powershell window, you will probably pause execution.  If so, tap the enter key to get it moving again.
+- You can run Win10-AtomPkgs.cmd (in a new shell window or from file explorer, not from the same window!) to install useful packages for Atom
 
 ---
 
@@ -54,5 +55,6 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command 
 - Verify Hyper-V install is working
 - Disable hyper-v services if not being used
 - Possibly add options for vagrant provider installs - hyper-v, vbox, esx, vmware desktop
-- Change windows settings i.e. display hidden files
+- Change windows settings i.e. display hidden files - done, verify that it works
 - Add AWS tools for Powershell
+- Enable telnet client feature

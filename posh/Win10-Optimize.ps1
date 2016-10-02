@@ -28,7 +28,15 @@ function optimizeWin {
 
 function disableWau {
   # disable windows updates
-  New-Item HKLM:\SOFTWARE\Policies\Microsoft\Windows -Name WindowsUpdate
-  New-Item HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate -Name AU
-  New-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoUpdate -Value 1
+  #New-Item HKLM:\SOFTWARE\Policies\Microsoft\Windows -Name WindowsUpdate
+  #New-Item HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate -Name AU
+  Set-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoUpdate -Value 1
+}
+
+function tweakExp {
+  $key = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+  Set-ItemProperty $key -Name SuperHidden -Value 00000001
+  Set-ItemProperty $key -Name ShowSuperHidden -Value 00000001
+  Set-ItemProperty $key -Name HideFileExt -Value 00000000
+  Set-ItemProperty $key -Name Hidden -Value 00000001
 }
