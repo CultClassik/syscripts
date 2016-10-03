@@ -121,6 +121,11 @@ function doAzureCfg {
     Install-Module AzureRM -Force
 }
 
+function doAwsCfg {
+    echo "Installing AWS stuff for Powershell, this action will probably take a while.."
+    choco install awstools.powershell
+}
+
 function doVirtCfg ($myVirt) {
   switch ($myVirt) {
     "virtualbox" {
@@ -226,6 +231,8 @@ if ($doSvcs -eq 6) {
 }
 optimizeWin
 #>
+$doDevTools = $wshell.Popup("Install the dev tools?",0,"",4)
+
 $doSysApps = $wshell.Popup("Install the system tools?",0,"",4)
 
 $doChef = $wshell.Popup("Install ChefDK?",0,"",4)
@@ -233,6 +240,8 @@ $doChef = $wshell.Popup("Install ChefDK?",0,"",4)
 $doDocker = $wshell.Popup("Install Docker Tools?",0,"",4)
 
 $doAzure = $wshell.Popup("Install Azure PS tools?",0,"",4)
+
+$doAws = $wshell.Popup("Install AWS PS tools?",0,"",4)
 
 If ($myos -eq "Windows 10 Pro") {
   $doVirt = $wshell.Popup("Install Hyper-V?",0,"",4)
@@ -271,19 +280,16 @@ Set-ItemProperty $key -Name HideFileExt -Value 00000000
 Set-ItemProperty $key -Name Hidden -Value 00000001
 
 ###########################
-### Install the dev tools
-###########################
-#$item="$env:USERPROFILE\AppData\Local\atom\bin"
-#$env:Path = updatePath $item
-#echo "Main (before dev tools) : $env:path" >> c:\mylog.txt
-doDevTools
-
-###########################
 ### Install optional items
 ###########################
 if ($doRmPkg -eq 6) {
   #. "$($MyInvocation.MyCommand.path | split-path)\Win10-RemovePackages.ps1"
   killApps
+}
+
+if ($doDevTools -eq 6) {
+  doDevTools
+  Start-Process cmd.exe -FilePath .\Win10-AtomPkgs.cmd
 }
 
 if ($doSysApps -eq 6) {
@@ -302,6 +308,10 @@ if ($doDocker -eq 6) {
 
 if ($doAzure -eq 6) {
   doAzureCfg
+}
+
+if ($doAws -eq 6) {
+  doAwsCfg
 }
 
 if ($doVirt -eq 6) {

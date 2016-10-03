@@ -9,21 +9,26 @@ https://hodgkins.io/setup-windows-10-for-chef-and-powershell-dsc-development
 
 Pretty simple Powershell script, this will grow over time. Note that I use this on Windows 10 Pro, it probably will throw a big malf if you use it on anything else.  You have been warned ;)
 
-To run Win10-Dev-Env.ps1, open Powershell as Administrator and use this command line:
+If you have Git you can clone this repository, although since this installs Git it's better suited to be downloaded as a zip and run from a machine that doesn't have anything installed.
+
+To run Win10-Dev-Env.ps1, open Powershell as Administrator, cd to the posh directory and use this command line:
 
 `powershell -ExecutionPolicy ByPass -File .\Configure-Win10.ps1`
 
 ---
 
 ###What it does:
-- Removes a lot of un-necessary items from Windows, disables Defender, Updates, etc
-- Installs:
+- Optionally (although this is one of the main points of this script) installs:
   * Chocolately package Manager, Nuget
   * Git and Git extentions GUI
   * curl
   * Postman
   * Packer
-- Optionally installed System Tools:
+  * Atom editor with some useful packages
+- Windows tweaks:
+  * For now just some File Explorer settings like show hidden files
+- Optionally removes a lot of un-necessary items from Windows
+- Optionally installs System Tools:
   * SysInternals
   * Notepad++
   * EasyConnect
