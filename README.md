@@ -53,12 +53,7 @@ To run Win10-Dev-Env.ps1, open Powershell as Administrator, cd to the posh direc
 
 ###To do:
 - Add shortcuts or something to all of the apps & tools that are installed
-- Atom issue "Error: spawn rubocop ENOENT"
-- Chef commands not running, probably needs path refreshed after installing ChefDK
-- fix "gem" issue, not in path
-- Disable OneDrive
 - Disable windows updates "from more than one place" - prevent pc from sending updates to other users
-- Verify Hyper-V install is working
 - Disable hyper-v services if not being used
 - Possibly add options for vagrant provider installs - hyper-v, vbox, esx, vmware desktop
 - Enable telnet client feature
