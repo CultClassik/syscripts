@@ -6,8 +6,7 @@ I  used Matthew Hodgkins's plog post as inspiration (or copy/paste fodder, depen
 
 https://hodgkins.io/setup-windows-10-for-chef-and-powershell-dsc-development
 
-
-Pretty simple Powershell script, this will grow over time. Note that I use this on Windows 10 Pro, it probably will throw a big malf if you use it on anything else.  You have been warned ;)
+Pretty simple Powershell script. Note that I use this on Windows 10 Pro.  Tested on Windows 7 Pro x64 after installing WMF 5.0, no issues.
 
 If you have Git you can clone this repository, although since this installs Git it's better suited to be downloaded as a zip and run from a machine that doesn't have anything installed.
 
