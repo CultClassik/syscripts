@@ -13,7 +13,7 @@ If you have Git you can clone this repository, although since this installs Git 
 
 To run Win10-Dev-Env.ps1, open Powershell as Administrator, cd to the posh directory and use this command line:
 
-`powershell -ExecutionPolicy ByPass -File .\Configure-Win10.ps1`
+`powershell -ExecutionPolicy ByPass -File .workstation\Configure-Win10.ps1`
 
 ---
 
