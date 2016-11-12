@@ -4,6 +4,9 @@
 ##  v0.2
 ###################
 
+# variables set here
+$pyVer = "3.5.2"
+
 function killApps {
   #Uninstall 3D Builder:
   Get-AppxPackage *3dbuilder* | Remove-AppxPackage
@@ -63,11 +66,6 @@ function doDevTools {
   Install-Module -Name PSScriptAnalyzer -Confirm:$true -Force
 
   ################################
-  ### Install Chocolatey
-  ################################
-  iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
-
-  ################################
   ### install packages from chocolatey
   ################################
   choco install atom -y
@@ -77,6 +75,13 @@ function doDevTools {
   choco install curl -y
   choco install packer -y
   choco install postman -y
+}
+
+function doPython {
+  cd $env:TEMP
+  Invoke-WebRequest -Uri "https://www.python.org/ftp/python/$pyVer/python-$pyVer.exe" -OutFile python_installer.exe
+  python_installer.exe /simple InstallAllUsers=1 TargetDir=C:\Python PrependPath=1
+  del python_installer.exe
 }
 
 function doSysTools {
@@ -233,6 +238,10 @@ optimizeWin
 #>
 $doDevTools = $wshell.Popup("Install the dev tools?",0,"",4)
 
+$doPython = $wshell.Popup("Install the Python $pyVer? (Will be installed regardless if you install AWS EB CLI)",0,"",4)
+
+$doAwsEbCli = $wshell.Popup("Install the AWS EB CLI?",0,"",4)
+
 $doSysApps = $wshell.Popup("Install the system tools?",0,"",4)
 
 $doChef = $wshell.Popup("Install ChefDK?",0,"",4)
@@ -279,6 +288,14 @@ Set-ItemProperty $key -Name ShowSuperHidden -Value 00000001
 Set-ItemProperty $key -Name HideFileExt -Value 00000000
 Set-ItemProperty $key -Name Hidden -Value 00000001
 
+################################################################################################################################
+
+################################
+### Install Chocolatey
+################################
+iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install wget -y
+
 ###########################
 ### Install optional items
 ###########################
@@ -290,6 +307,15 @@ if ($doRmPkg -eq 6) {
 if ($doDevTools -eq 6) {
   doDevTools
   Start-Process cmd.exe -FilePath .\Win10-AtomPkgs.cmd
+}
+
+if ($doPython -eq 6) {
+  doPython
+}
+
+if ($doAwsEbCli -eq 6) {
+  doPython
+  pip install awsebcli
 }
 
 if ($doSysApps -eq 6) {
