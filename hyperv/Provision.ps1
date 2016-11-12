@@ -5,7 +5,7 @@ configuration BaseConfig {
     [string]$NodeName = 'localhost',
 
     [Parameter(Mandatory)]
-    [string]$vmName,
+    [string]$ComputerName,
 
     [Parameter(Mandatory)] 
     [string]$IPAddress,
@@ -33,7 +33,7 @@ configuration BaseConfig {
     
     xComputer RenameComputer
     {
-        Name = $vmName
+        Name = $ComputerName
     }
 
     xIPAddress NewIpAddress
@@ -59,30 +59,16 @@ configuration BaseConfig {
   }
 }
 
-# Hyper-V target host
-$vmHost = "cthulhu"
-
-# Name of vSwitch to use on Hyper-V target host
-$vSwitch = "Public_vSwitch"
-
-# Source path for vhd
-$vhdSource = "v:\Templates"
-
-# Name of source vhd
-$vhdName = "Win2012_R2-Activated.vhdx"
-
-# Target path for vhd
-$vhdTarget = "v:\VMs"
-$vhdTargetSmb = "v$\VMs"
+Import-Module Hyper-V
 
 # Prompt user for VM number, this will be used for naming and ip
 $vmNum = Read-Host -Prompt 'Input VM number (101-120)'
 
-$vmName = "Win2012-VM-$vmNum"
+$ComputerName = "Win2012-VM-$vmNum"
 
 $IPAddress = "192.168.1.$vmNum"
 
-$mofPath = "c:\temp\dsc"
+$mofPath = "c:\temp\dsc\$ComputerName.mof"
 
 $NodeName = 'localhost'
 
@@ -96,8 +82,23 @@ $InterfaceAlias = 'Management'
 
 $AddressFamily = 'IPv4'
 
+# Hyper-V target host
+$vmHost = "cthulhu"
+
+# Name of vSwitch to use on Hyper-V target host
+$vSwitch = "Public_vSwitch"
+
+# Source path for vhd
+$vhdSource = "\\$vmHost\v$\Templates"
+
+# Name of source vhd
+$vhdName = "Win2012_R2-Activated.vhdx"
+
+# Target path for vhd
+$vhdTarget = "\\$vmHost\v$\VMs\$ComputerName"
+
 BaseConfig `
-    -vmName $vmName `
+    -ComputerName $ComputerName `
     -IPAddress $IPAddress `
     -OutputPath $mofPath `
     -NodeName $NodeName `
@@ -107,39 +108,51 @@ BaseConfig `
     -InterfaceAlias $InterfaceAlias `
     -AddressFamily $AddressFamily
 
-Rename-Item -Path "$mofPath\localhost.mof" -NewName "$vmName.mof"
-
-New-Item -ItemType directory -Path "\\$vmHost\$vhdTargetSmb\$vmName" -Force
-New-Item -ItemType directory -Path "\\$vmHost\$vhdTargetSmb\$vmName\dsc" -Force
-
-Copy-Item -Path "$mofPath\$vmName.mof" -Destination "\\$vmHost\$vhdTargetSmb\$vmName\dsc\$vmName.mof" -Force
-
 # make sure to name the file after the computer
-$MyScriptBlock = {
-    # Create folder for new VM
-    New-Item -ItemType directory -Path "$Using:vhdTarget\$Using:vmName" -Force
 
-    # Copy the base vhd
-    Copy-Item -Path "$Using:vhdSource\$Using:vhdName" -Destination "$Using:vhdTarget\$Using:vmName\$Using:vmName.vhdx"
 
-    # Mount VHD, Inject dsc file
-    $MountedDisk = Mount-VHD -Path "$Using:vhdTarget\$Using:vmName\$Using:vmName.vhdx" -Passthru
-    [String]$DriveLetter = ($MountedDisk | Get-Disk | Get-Partition | ? {$_.Type -eq "Basic"} | Select-Object -ExpandProperty DriveLetter) + ":"
-    $DriveLetter = $DriveLetter.Replace(' ','')
-    Copy-Item -Path "$Using:vhdTarget\$Using:vmName\dsc\$Using:vmName.mof" -Destination "$DriveLetter\localhost.mof" -Force
-    #Copy-Item -Path "$vDiskPath\unattend.xml" -Destination "$DriveLetter\unattend.xml" -Force
+# Create folder for new VM
+New-Item -ItemType directory -Path "$vhdTarget\$ComputerName" -Force
 
-    # Unmount the new VHD
-    Dismount-VHD "$Using:vhdTarget\$Using:vmName\$Using:vmName.vhdx"
+# Copy the base vhd
+Copy-Item -Path $vhdSource\$vhdName -Destination $vhdTarget
 
-    New-VM -VHDPath "$Using:vhdTarget\$Using:vmName\$Using:vmName.vhdx" -Generation 2 -MemoryStartupBytes 512MB -SwitchName $Using:vSwitch -Name $Using:vmName -Path "$Using:vhdTarget\$Using:vmName"
+# Copy the mof file
+#Copy-Item -Path $mofPath -Destination $vhdTarget
 
-    Set-VMProcessor -VMName $Using:vmName -Count 2
+New-VM -ComputerName $vmHost -VHDPath $vhdTarget\$vhdName -Generation 2 -MemoryStartupBytes 512MB -SwitchName $vSwitch -Name $ComputerName -Path "$vhdTarget\$ComputerName"
 
-    Enable-VMIntegrationService -VMName $Using:vmName -Name 'Guest Service Interface'
-}
+Set-VMProcessor -ComputerName $vmHost -VMName $ComputerName -Count 2
 
-Invoke-Command -ComputerName $vmHost -ScriptBlock $MyScriptBlock
+Enable-VMIntegrationService -ComputerName $vmHost -VMName $ComputerName -Name 'Guest Service Interface'
+
+<#
+# set up data to pass to the remote session
+$ScriptBlockContent = {
+  param ($vhdTarget)
+  Write-Host $vhdtarget
+  param ($vhdName)
+  Write-Host $vhdName
+  param ($mofFile)
+  Write-Host $mofFile
+   }
+
+# persistent connection to allow the vm host to do the work faster
+Enter-PSSession $vmHost
+#>
+# Inject dsc file
+$MountedDisk = Mount-VHD -Path $vhdTarget\$vhdName -Passthru
+[String]$DriveLetter = ($MountedDisk | Get-Disk | Get-Partition | ? {$_.Type -eq "Basic"} | Select-Object -ExpandProperty DriveLetter) + ":"
+$DriveLetter = $DriveLetter.Replace(' ','')
+#Get-PSDrive
+Copy-Item -Path $mofPath -Destination "$DriveLetter\Windows\System32\Configuration\pending.mof" -Force
+
+# Unmount the new VHD
+Dismount-VHD $vhdTarget\$vhdName
+
+
 
 # Start the new VM
-Start-Vm -ComputerName $vmHost -Name $vmName
+Start-Vm -ComputerName $vmHost -Name $ComputerName
+
+#>

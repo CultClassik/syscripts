@@ -23,4 +23,9 @@ $chocoPkgs = "atom","git.install","gitextensions","curl","postman","sysinternals
        DependsOn = "[cChocoInstaller]installChoco"
      }
    }
-} 
+}
+
+Start-DscConfiguration -Path $config.psparentpath -Wait -Verbose -Force
+
+# need to set WinRM service to started, with auto delayed start
+# running scripts is disabled on win10, how to allow?

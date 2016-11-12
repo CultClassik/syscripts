@@ -1,20 +1,23 @@
 ﻿configuration HTTPPullServer
 {
     # Modules must exist on target pull server
+    Import-DSCResource -ModuleName xPSDesiredStateConfiguration
     Import-DSCResource -ModuleName PSDesiredStateConfiguration
-    Import-DscResource -ModuleName xDscWebService
+    
 
-    Node 192.168.1.100
+    Node WIN2012-DC.DIEHLABS.TECH
     {
         WindowsFeature DSCServiceFeature
         {
             Ensure = "Present"
             Name   = "DSC-Service"
+            Source = "Windows Update"
         }
 
         WindowsFeature IISConsole {
             Ensure = "Present"
             Name   = "Web-Mgmt-Console"
+            Source = "Windows Update"
         }
 
         xDscWebService PSDSCPullServer
@@ -46,4 +49,5 @@
 
 HTTPPullServer -OutputPath c:\temp\http
 
-Start-DscConfiguration -Path C:\temp\http -ComputerName 192.168.1.100 -Verbose -Wait
+Start-DscConfiguration -Path C:\temp\http -ComputerName WIN2012-DC.DIEHLABS.TECH -Verbose -Wait -Force
+
