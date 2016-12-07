@@ -1,8 +1,11 @@
-#
+﻿#
 #  Chris Diehl <chris@diehlabs.com>
 #
 #  Simple script to provision new Hyper-V guests from pre-built VHDs
 #
+
+# https://gist.githubusercontent.com/devblackops/989bf64ad8d24fcafac1/raw/a1277f4b30c7ac32d908121ef3ce6b7f589dd000/chefquery.ps1
+. ./chefquery.ps1
 
 # Define available VM names with their generation and VHD name
 $vmTemplates = @{
@@ -31,6 +34,7 @@ $data = @{
     "vDiskPath" = "c:\VM_Templates";
     "vmTemplates" = $vmTemplates;
     "vmHostPath" = "C:\VMs";
+    "chefCert" = "C:\Users\chris\Documents\projects\chef-repo\.chef\chris.pem";
     }
 
 $select = @{
@@ -132,3 +136,16 @@ Set-VMProcessor -ComputerName $data.vmHost -VMName $select.vmName -Count 2
 Enable-VMIntegrationService -ComputerName $data.vmHost -VMName $select.vmName -Name 'Guest Service Interface'
 
 Start-Vm -ComputerName $data.vmHost -Name $select.vmName
+
+Write-Host "Verify new VM:"
+Get-VM -ComputerName $data.vmHost -Name $select.vmName
+
+# may need to add a sleepy loop here
+Write-Host "IP Address for new VM:"
+Get-VM -ComputerName $data.vmHost -vm $select.vmName | Select -ExpandProperty NetworkAdapters | Select VMName, IPAddresses, Status
+
+
+#Write-Host "Enter credentials for Chef Server"
+#Get-PfxCertificate -FilePath $data.chefCert
+#[Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+#Invoke-RestMethod -Uri https://chef.diehlabs.lan/organizations/diehlabs/nodes -Credential chris
