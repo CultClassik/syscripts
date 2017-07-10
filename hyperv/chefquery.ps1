@@ -601,15 +601,15 @@ function Invoke-Encrypt {
     return [Convert]::ToBase64String($encrypted)
 }
 
-$Node = '<nodename>'
-$orgUrl = '<chef org url>'
-$KeyPath = '<pem url>'
+$Node = 'dagon'
+$orgUrl = 'https://chef.diehlabs.lan/organizations/diehlabs'
+$KeyPath = 'C:\Users\chris\Documents\projects\chef-repo\.chef\chris.pem'
 
 $params = @{
     Method = 'GET'
     OrgUri = $orgUrl
     uri = "/nodes/$Node"
-    UserItem = ($KeyPath.split('/') | Select-Object -Last 1).Split('.')[0] 
+    UserItem = ($KeyPath.split('\') | Select-Object -Last 1).Split('.')[0] 
     KeyPath = $KeyPath
 }
 

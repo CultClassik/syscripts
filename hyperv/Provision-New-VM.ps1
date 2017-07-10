@@ -1,8 +1,22 @@
 ﻿#
 #  Chris Diehl <chris@diehlabs.com>
 #
-#  Simple script to provision new Hyper-V guests from pre-built VHDs
+#  Manage Hyper-V guests
 #
+param (
+    [string]$vmHost = "localhost",
+    [string]$action = "create"
+ )
+
+Import-Module Hyper-V
+
+$vmHost = "dagon"
+Get-VM -ComputerName $vmHost -Name Win2016
+Get-VMStoragePath - -ComputerName $vmHost -VMName Win2016
+
+ if ($action -eq "rm") {
+
+ }
 
 # https://gist.githubusercontent.com/devblackops/989bf64ad8d24fcafac1/raw/a1277f4b30c7ac32d908121ef3ce6b7f589dd000/chefquery.ps1
 . ./chefquery.ps1
@@ -30,7 +44,7 @@ $vmTemplates = @{
 $data = @{
     "user" = "chris";
     "pass"="";
-    "vmHost" = "dagon";
+    "vmHost" = $vmHost;
     "vDiskPath" = "c:\VM_Templates";
     "vmTemplates" = $vmTemplates;
     "vmHostPath" = "C:\VMs";
