@@ -25,7 +25,7 @@ param (
     [string]$poolUrl = "eth-us-west1.nanopool.org:9999",
 
     # Additional arguments, defaults should suffice but can be changed if desired.
-    [string]$addlArgs = "-U --cuda-parallel-hash 4"
+    [string]$addlArgs = "-U --cuda-parallel-hash 4 --cuda-devices"
 )
 
 $processManager = {
@@ -39,7 +39,7 @@ $processManager = {
 
     Function goDig([string]$gpuId) {
         Set-Location $minerPath
-        $proc = [diagnostics.process]::start("$minerPath\$minerExe -S $poolUrl -O $etherAcct.$workerName.$gpuId $addlArgs")
+        $proc = [diagnostics.process]::start("$minerPath\$minerExe -S $poolUrl -O $etherAcct.$workerName.$gpuId $addlArgs $gpuId")
         $proc.WaitToStart()
         return $proc.Id
     }
