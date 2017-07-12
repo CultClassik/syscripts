@@ -43,7 +43,7 @@ Function getGpuUse([string]$gpuId) {
     return $intUtil
 }
 
-Function goDig($gpuId) {
+Function goDig([string]$gpuId) {
     $proc = Start-Process -FilePath $minerPath/$minerExe -ArgumentList "-U -S $poolUrl -O $etherAcct.$workerName.$gpuId  --cuda-devices $gpuId $addlArgs" -Passthru
     return $proc.Id
 }
@@ -60,11 +60,23 @@ Function getGpus() {
     return $gpus
 }
 
+Function recycle($minerPid, $g) {
+  $testRunning = Get-Process -Id $minerPid  -ErrorAction SilentlyContinue
+  if ($testRunning -eq $null) {
+      Write-host "Not running, starting a new miner."
+  } else {
+      Write-host "Killing Miner.."
+      Stop-Process -Id $minerPid -Force -ErrorAction SilentlyContinue
+      Wait-Process -Id $minerPid
+  }
+  $ledger["$g"] = goDig("$g")
+}
+
 Function watcher() {
     $gpus = getGpus
     for ($i=0; $i -lt $gpus+1; $i++) {
         $myPid = goDig($i)
-        $ledger.Set_Item("$i", "$pid")
+        $ledger.Set_Item("$i", "$myPid")
     }
    # Loop runs forever, killing and restarting the mining process on this GPU if GPU usage drops below threshold.
     while ($true) {
@@ -73,17 +85,13 @@ Function watcher() {
             $gpuPerc = getGpuUse("$g")
             $minerPid = $ledger[$g]
             if ($gpuPerc -lt $minGpuUse) {
-                Write-Host "GPU $g usage is only $gpuPerc!"
-                Write-Host "PID::$minerPid"
-                $testRunning = Get-Process -Id $minerPid  -ErrorAction SilentlyContinue
-                if($testRunning -eq $null) {
-                    Write-host "Not running, starting a new miner."
-                } else {
-                    Write-host "Killing Miner.."
-                    Stop-Process -Id $minerPid -Force -ErrorAction SilentlyContinue
-                    Wait-Process -Id $minerPid
-                }
-                $ledger[$g] = goDig($g)
+              Write-Host "GPU $g usage is only $gpuPerc, will wait, re-check and recycle if needed."
+              # Wait another 10 seconds and recycle if usage still below threshold
+              Start-Sleep 10
+              if ($gpuPerc -lt $minGpuUse) {
+                  Write-Host "GPU $g usage is only $gpuPerc, recycling.."
+                recycle($minerPid, $g)
+              }
             } else {
                 Write-Host "GPU $g usage looking good at $gpuPerc, carry on."
             }
