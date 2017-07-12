@@ -44,7 +44,7 @@ Function getGpuUse([string]$gpuId) {
 }
 
 Function goDig([string]$gpuId) {
-    $proc = Start-Process -FilePath $minerPath/$minerExe -ArgumentList "-U -S $poolUrl -O $etherAcct.$workerName.$gpuId  --cuda-devices $gpuId $addlArgs" -Passthru
+    $proc = Start-Process -FilePath $minerPath/$minerExe -ArgumentList "-U -S $poolUrl -O $etherAcct.$workerName-gpu$gpuId  --cuda-devices $gpuId $addlArgs" -Passthru
     return $proc.Id
 }
 
