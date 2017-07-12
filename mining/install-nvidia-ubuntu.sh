@@ -37,7 +37,7 @@ nvidia-xconfig --enable-all-gpus
 nvidia-xconfig --cool-bits=12
 
 usermod -aG root chris
-usermod -aG screen chris
+usermod -aG video chris
 
 echo "export DISPLAY=:0" >> /home/chris/.bashrc
 echo "#!/bin/bash" > /home/chris/.xinitrc
