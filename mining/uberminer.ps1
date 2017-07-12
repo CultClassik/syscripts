@@ -1,4 +1,4 @@
-# Originally designed for use with ethminer.﻿
+# Originally designed for use with ethminer.?
 # Lynch & Diehl
 #
 # To do:
@@ -11,7 +11,7 @@
 
 Param(
     # Folder path to the miner exe.
-    [String]$minerPath="d:\mining\ethminer",
+    [String]$minerPath="c:\mining\ethminer",
 
     # Miner executable name.
     [String]$minerExe="ethminer.exe",
@@ -29,7 +29,7 @@ Param(
     [String]$addlArgs = "--cuda-parallel-hash 4",
 
     # Time in seconds to wait before checking GPU usage for all miners.
-    [Int]$checkup = 5,
+    [Int]$checkup = 30,
 
     # Minimum CPU usage to check for when deciding if the miner is fucntioning.
     [Int]$minGpuUse = 80
@@ -61,6 +61,11 @@ Function getGpus() {
 }
 
 Function watcher() {
+    $gpus = getGpus
+    for ($i=0; $i -lt $gpus+1; $i++) {
+        $myPid = goDig($i)
+        $ledger.Set_Item("$i", "$pid")
+    }
    # Loop runs forever, killing and restarting the mining process on this GPU if GPU usage drops below threshold.
     while ($true) {
         Start-Sleep $checkup
@@ -71,7 +76,7 @@ Function watcher() {
                 Write-Host "GPU $g usage is only $gpuPerc!"
                 Write-Host "PID::$minerPid"
                 $testRunning = Get-Process -Id $minerPid  -ErrorAction SilentlyContinue
-                if($testProc -eq $null) {
+                if($testRunning -eq $null) {
                     Write-host "Not running, starting a new miner."
                 } else {
                     Write-host "Killing Miner.."
@@ -87,16 +92,7 @@ Function watcher() {
     }
 }
 
-Function startUp() {
-    $gpus = getGpus
-    for ($i=0; $i -lt $gpus+1; $i++) {
-        $myPid = goDig($i)
-        $ledger.Set_Item("$i", "$pid")
-        watcher
-    }
-}
-
 # Init hashtable to store gpu ids and the miner pid associated with each gpu
 $ledger = @{}
 # Start mining!
-startUp
+watcher
