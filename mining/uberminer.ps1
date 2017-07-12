@@ -29,7 +29,7 @@ Param(
     [String]$addlArgs = "--cuda-parallel-hash 4",
 
     # Time in seconds to wait before checking GPU usage for all miners.
-    [Int]$checkup = 30,
+    [Int]$checkup = 5,
 
     # Minimum CPU usage to check for when deciding if the miner is fucntioning.
     [Int]$minGpuUse = 80
@@ -44,6 +44,8 @@ Function getGpuUse([string]$gpuId) {
 }
 
 Function goDig([string]$gpuId) {
+Write-host "starting proc on $gpuId"
+
     $proc = Start-Process -FilePath $minerPath/$minerExe -ArgumentList "-U -S $poolUrl -O $etherAcct.$workerName-gpu$gpuId  --cuda-devices $gpuId $addlArgs" -Passthru
     return $proc.Id
 }
@@ -69,7 +71,8 @@ Function recycle($minerPid, $g) {
       Stop-Process -Id $minerPid -Force -ErrorAction SilentlyContinue
       Wait-Process -Id $minerPid
   }
-  $ledger["$g"] = goDig("$g")
+  $newPid = goDig($g)
+  $ledger.Set_Item("$g", "$newPid")
 }
 
 Function watcher() {
@@ -81,9 +84,9 @@ Function watcher() {
    # Loop runs forever, killing and restarting the mining process on this GPU if GPU usage drops below threshold.
     while ($true) {
         Start-Sleep $checkup
-        foreach ($g in $ledger.Keys) {
+        for ($g=0; $g -lt $gpus+1; $g++) {
             $gpuPerc = getGpuUse("$g")
-            $minerPid = $ledger[$g]
+            $minerPid = $ledger.Get_Item("$g")
             if ($gpuPerc -lt $minGpuUse) {
               Write-Host "GPU $g usage is only $gpuPerc, will wait, re-check and recycle if needed."
               # Wait another 10 seconds and recycle if usage still below threshold
