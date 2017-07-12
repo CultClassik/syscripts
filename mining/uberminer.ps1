@@ -84,7 +84,6 @@ Function watcher() {
                     Wait-Process -Id $minerPid
                 }
                 $ledger[$g] = goDig($g)
-
             } else {
                 Write-Host "GPU $g usage looking good at $gpuPerc, carry on."
             }
