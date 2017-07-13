@@ -23,16 +23,17 @@ Param(
     [String]$etherAcct = "0x96ae82e89ff22b3eff481e2499948c562354cb23",
 
     # The pool address to mine in.
-    [String]$poolUrl = "eth-us-west1.nanopool.org:9999",
+#    [String]$poolUrl = "eth-us-west1.nanopool.org:9999 -FS eth-us-east1.nanopool.org:9999",
+    [String]$poolUrl = "us2.ethermine.org:4444 -FS us1.ethermine.org:4444",
 
     # Additional arguments, defaults should suffice but can be changed if desired.
     [String]$addlArgs = "--cuda-parallel-hash 4",
 
     # Time in seconds to wait before checking GPU usage for all miners.
-    [Int]$checkup = 5,
+    [Int]$checkup = 30,
 
     # Minimum CPU usage to check for when deciding if the miner is fucntioning.
-    [Int]$minGpuUse = 80
+    [Int]$minGpuUse = 70
 )
 
 Function getGpuUse([string]$gpuId) {
