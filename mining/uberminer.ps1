@@ -85,19 +85,20 @@ Function watcher() {
    # Loop runs forever, killing and restarting the mining process on this GPU if GPU usage drops below threshold.
     while ($true) {
         Start-Sleep $checkup
+        $current = Get-Date -Format g
         for ($g=0; $g -lt $gpus+1; $g++) {
             $gpuPerc = getGpuUse("$g")
             $minerPid = $ledger.Get_Item("$g")
             if ($gpuPerc -lt $minGpuUse) {
-              Write-Host "GPU $g usage is only $gpuPerc, will wait, re-check and recycle if needed."
+              Write-Host "$current : GPU $g $gpuPerc, waiting to recheck for possible recycle."
               # Wait another 10 seconds and recycle if usage still below threshold
               Start-Sleep 10
               if ($gpuPerc -lt $minGpuUse) {
-                  Write-Host "GPU $g usage is only $gpuPerc, recycling.."
+                  Write-Host "$current : GPU $g usage is only $gpuPerc, recycling now."
                 recycle $minerPid $g
               }
             } else {
-                Write-Host "GPU $g usage looking good at $gpuPerc, carry on."
+                Write-Host "$current : GPU $g $gpuPerc%"
             }
         }
     }
