@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# reference
+# https://wiki.archlinux.org/index.php/NVIDIA/Tips_and_tricks#Enabling_overclocking
+# https://forum.ethereum.org/discussion/7780/gtx1070-linux-installation-and-mining-clue-goodbye-amd-welcome-nvidia-for-miners
+#https://blockoperations.com/build-6-gpu-zcash-headless-mining-rig-ubuntu-16-04-using-claymore/
+
 nvidia_drv="nvidia-381"
 
 drvpath="/mnt/software/Drivers"
@@ -14,11 +19,11 @@ apt update &&\
  apt -y install \
  git screen vim nmap ncdu busybox inxi links unzip python nfs-common xorg \
  build-essential dkms xserver-xorg xserver-xorg-core xserver-xorg-input-evdev \
- xserver-xorg-video-dummy x11-xserver-utils xdm libcurl3
- 
-mkdir /mnt/software
-echo "nastee.diehlabs.lan:/software    /mnt/software    nfs     defaults        0       0" >> /etc/fstab
-mount -a
+ xserver-xorg-video-dummy x11-xserver-utils xdm libcurl3 gtk2.0
+
+#mkdir /mnt/software
+#echo "nastee.diehlabs.lan:/software    /mnt/software    nfs     defaults        0       0" >> /etc/fstab
+#mount -a
 
 # install cuda
 dpkg -i $drvpath/$cuda1
@@ -30,8 +35,9 @@ $drvpath/$nvdrv
 # apt install -y $nvidia_drv
 
 # change some settings
-nvidia-xconfig --enable-all-gpus
-nvidia-xconfig --cool-bits=12
+#nvidia-xconfig --enable-all-gpus
+#nvidia-xconfig --cool-bits=12
+nvidia-xconfig -a --allow-empty-initial-configuration --cool-bits=28 --use-display-device="DFP-0" --connected-monitor="DFP-0
 
 usermod -aG root chris
 echo "force_color_prompt=yes" >> /home/chris/.bashrc
@@ -52,25 +58,28 @@ mkdir /home/chris/ethminer &&\
  wget https://github.com/ethereum-mining/ethminer/releases/download/v0.11.0/ethminer-0.11.0-Linux.tar.gz &&\
  tar -xvf ./ethminer-0.11.0-Linux.tar.gz &&\
  rm ethminer-0.11.0-Linux.tar.gz &&\
- echo "./bin/ethminer -U -S eth-us-west1.nanopool.org:9999 -O 0x96ae82e89ff22b3eff481e2499948c562354cb23.cthulhu --cuda-parallel-hash 4" \
+ echo "./bin/ethminer -U -S  us2.ethermine.org:4444 -FS us1.ethermine.org:4444 -O 0x96ae82e89ff22b3eff481e2499948c562354cb23.cthulhu --cuda-parallel-hash 4" \
  > ./start_mining.sh &&\
  chmod +x start_mining.sh
 
 # settings for evga 1060 6g ftw
-nvidia-smi -pm ENABLED
-nvidia-smi -pl 75
+nvidia-smi -pm ENABLED &&\
+ nvidia-smi -pl 65
 
 nvidia-settings -a GPUPowerMizerMode=1 -a GPUFanControlState=1 -a GPUGraphicsClockOffset[3]=100
 
+nvidia-settings -a '[gpu:0]/GPUMemoryTransferRateOffset[3]=700' && nvidia-settings -a '[gpu:0]/GPUGraphicsClockOffset[3]=100' &&\
+nvidia-settings -a '[gpu:1]/GPUMemoryTransferRateOffset[3]=700' && nvidia-settings -a '[gpu:1]/GPUGraphicsClockOffset[3]=100'
+
 nvidia-settings -a '[gpu:0]/GPUMemoryTransferRateOffset[3]=1200' &&\
- nvidia-settings -a '[gpu:0]/GPUGraphicsClockOffset[3]=100'
+
 
 
 nvidia-settings -a '[gpu:0]/GPUFanControlState=1' &&\
  nvidia-settings -a '[fan:0]/GPUTargetFanSpeed=60'
 
 # use below to allow nvidia changes, maybe that's what screen is for..
- X :1 &
+X :1 &
 export DISPLAY=:1
 nvidia-settings your-params
 killall X

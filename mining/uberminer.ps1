@@ -36,6 +36,25 @@ Param(
     [Int]$minGpuUse = 70
 )
 
+function getPoolStats() {
+    $restUrl = "https://ethermine.org/api/miner_new/96Ae82E89FF22B3EFF481e2499948c562354CB23"
+    $stats = Invoke-RestMethod -Uri $restUrl -ContentType "application/json"
+    return $stats.workers
+}
+
+function sendEmail() {
+  $EmailFrom = "cultclassik@gmail.com"
+  $EmailTo = "8173721771@txt.att.net"
+  $Subject = "Display Driver stopped"
+  $Body = "Miner crashed on $host"
+  $SMTPServer = "smtp.gmail.com"
+  $SMTPClient = New-Object Net.Mail.SmtpClient($SmtpServer, 587)
+  $SMTPClient.EnableSsl = $true
+  #fill in your email address and password. if using gmail you may need to go to https://myaccount.google.com/security and turn on "Allow less secure Apps"
+  $SMTPClient.credentials = new-object Management.Automation.PSCredential “youremail@gmail.com”, (“yourpassword” | ConvertTo-SecureString -AsPlainText -Force)
+  $SMTPClient.Send($EmailFrom, $EmailTo, $Subject, $Body)
+}
+
 Function getGpuUse([string]$gpuId) {
     # path to nvsmi exe
     Set-Location "C:\Program Files\NVIDIA Corporation\NVSMI"
@@ -85,6 +104,7 @@ Function watcher() {
    # Loop runs forever, killing and restarting the mining process on this GPU if GPU usage drops below threshold.
     while ($true) {
         Start-Sleep $checkup
+        $stats = getPoolStats
         $current = Get-Date -Format g
         for ($g=0; $g -lt $gpus+1; $g++) {
             $gpuPerc = getGpuUse("$g")
@@ -98,7 +118,8 @@ Function watcher() {
                 recycle $minerPid $g
               }
             } else {
-                Write-Host "$current : GPU $g $gpuPerc%"
+                $statsGpu = "" #$stats."$workerName-gpu$g".hashrate
+                Write-Host "$current : GPU $g $gpuPerc% : $statsGpu"
             }
         }
     }
